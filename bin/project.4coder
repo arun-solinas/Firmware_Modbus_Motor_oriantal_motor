@@ -1,0 +1,61 @@
+version(1);
+project_name = "win32_msvc_project";
+
+patterns = {
+    "*.c",
+    "*.cpp",
+    "*.h",
+    "*.bat",
+    "*.4coder",
+    "*.txt",
+};
+
+blacklist_patterns = {
+    ".*",
+};
+
+load_paths = {
+    {
+        {
+            {"..\\Core", .recursive = true, .relative = true},
+            {"..\\Bin", .recursive = false, .relative = true},
+        }, 
+        .os = "win"
+    },
+};
+
+command_list = {
+    {
+        .name = "build",
+        .out = "*compilation*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd = {{"build.bat", .os = "win"}},
+    },
+    {
+        .name = "debug",
+        .out = "*compilation*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd = {{"..\\bin\\debug.bat", .os = "win"}},
+    },
+    {
+        .name = "upload",
+        .out = "*compilation*",
+        .footer_panel = true,
+        .save_dirty_files = true,
+        .cursor_at_end = false,
+        .cmd = {{"..\\bin\\upload.bat 1", .os = "win"}},
+    },
+};
+
+fkey_command[1] = "build";
+fkey_command[2] = "debug";
+fkey_command[3] = "upload";
+
+
+
+
+

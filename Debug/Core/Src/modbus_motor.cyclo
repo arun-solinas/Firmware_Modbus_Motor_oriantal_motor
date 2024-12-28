@@ -1,0 +1,16 @@
+../Core/Src/modbus_motor.cpp:13:10:uint16_t Modbus_CalculateCRC(uint8_t*, uint16_t)	4
+../Core/Src/modbus_motor.cpp:27:6:void Modbus_SendCommand(uint8_t, uint8_t, uint16_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:43:10:uint16_t Modbus_ReadResponse(uint8_t, uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:52:6:void Motor_Start(uint8_t)	1
+../Core/Src/modbus_motor.cpp:56:6:void Motor_Stop(uint8_t)	1
+../Core/Src/modbus_motor.cpp:60:6:void Motor_SetDirection(uint8_t, uint8_t)	1
+../Core/Src/modbus_motor.cpp:64:6:void Motor_SetSpeed(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:68:6:void Motor_SetTorqueLimit(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:73:6:void Motor_SetAcceleration(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:78:6:void Motor_SetDeceleration(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:84:6:void Low_Forward_Synchronize()	1
+../Core/Src/modbus_motor.cpp:99:6:void Low_Reverse_Synchronize()	1
+../Core/Src/modbus_motor.cpp:112:6:void Mid_Forward_Synchronize()	1
+../Core/Src/modbus_motor.cpp:124:6:void Mid_Reverse_Synchronize()	1
+../Core/Src/modbus_motor.cpp:138:6:void High_Forward_Synchronize()	1
+../Core/Src/modbus_motor.cpp:152:6:void High_Reverse_Synchronize()	1
