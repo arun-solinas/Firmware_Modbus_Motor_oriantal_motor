@@ -4,16 +4,16 @@
 ../Core/Src/modbus_motor.cpp:44:9:uint8_t Modbus_WaitResponse(uint32_t)	3
 ../Core/Src/modbus_motor.cpp:57:9:uint8_t Modbus_ValidateResponse(uint8_t*, uint8_t, uint8_t, uint8_t)	3
 ../Core/Src/modbus_motor.cpp:69:6:void Modbus_HandleTimeout()	2
-../Core/Src/modbus_motor.cpp:80:9:uint8_t Modbus_RetryLastCommand()	2
-../Core/Src/modbus_motor.cpp:90:9:uint8_t Modbus_SendCommand(uint8_t, uint8_t, uint16_t, uint16_t)	4
-../Core/Src/modbus_motor.cpp:140:10:uint16_t Modbus_ReadResponse(uint8_t, uint8_t, uint16_t*)	3
-../Core/Src/modbus_motor.cpp:164:9:uint8_t Motor_Start(uint8_t)	1
-../Core/Src/modbus_motor.cpp:168:9:uint8_t Motor_Stop(uint8_t)	1
-../Core/Src/modbus_motor.cpp:172:9:uint8_t Motor_SetDirection(uint8_t, uint8_t)	1
-../Core/Src/modbus_motor.cpp:176:9:uint8_t Motor_SetSpeed(uint8_t, uint16_t)	1
-../Core/Src/modbus_motor.cpp:180:9:uint8_t Motor_SetTorqueLimit(uint8_t, uint16_t)	2
-../Core/Src/modbus_motor.cpp:185:9:uint8_t Motor_SetAcceleration(uint8_t, uint16_t)	1
-../Core/Src/modbus_motor.cpp:189:9:uint8_t Motor_SetDeceleration(uint8_t, uint16_t)	1
-../Core/Src/modbus_motor.cpp:193:9:uint8_t Motor_GetStatus(uint8_t, uint16_t*)	2
-../Core/Src/modbus_motor.cpp:204:9:uint8_t Low_Forward_Synchronize()	6
-../Core/Src/modbus_motor.cpp:234:9:uint8_t Emergency_Stop()	2
+../Core/Src/modbus_motor.cpp:82:9:uint8_t Modbus_RetryLastCommand()	2
+../Core/Src/modbus_motor.cpp:92:9:uint8_t Modbus_SendCommand(uint8_t, uint8_t, uint16_t, uint16_t)	4
+../Core/Src/modbus_motor.cpp:144:10:uint16_t Modbus_ReadResponse(uint8_t, uint8_t, uint16_t*)	3
+../Core/Src/modbus_motor.cpp:168:9:uint8_t Motor_Start(uint8_t)	1
+../Core/Src/modbus_motor.cpp:172:9:uint8_t Motor_Stop(uint8_t)	1
+../Core/Src/modbus_motor.cpp:176:9:uint8_t Motor_SetDirection(uint8_t, uint8_t)	1
+../Core/Src/modbus_motor.cpp:180:9:uint8_t Motor_SetSpeed(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:184:9:uint8_t Motor_SetTorqueLimit(uint8_t, uint16_t)	2
+../Core/Src/modbus_motor.cpp:189:9:uint8_t Motor_SetAcceleration(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:193:9:uint8_t Motor_SetDeceleration(uint8_t, uint16_t)	1
+../Core/Src/modbus_motor.cpp:197:9:uint8_t Motor_GetStatus(uint8_t, uint16_t*)	2
+../Core/Src/modbus_motor.cpp:208:9:uint8_t Low_Forward_Synchronize()	5
+../Core/Src/modbus_motor.cpp:250:9:uint8_t Emergency_Stop()	2

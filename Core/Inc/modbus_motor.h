@@ -9,6 +9,8 @@
 #define MODBUS_WRITE_SINGLE_REG     0x06
 #define MODBUS_WRITE_MULTIPLE_REGS  0x10
 
+
+
 // NOTE(rsb): Register Addresses
 
 #define REG_START_STOP     0x0100
@@ -39,7 +41,7 @@
 
 // NOTE(rsb): Drum Motor Speed Levels (RPM)
 
-#define M1_SPEED_LOW      500  // Low speed
+#define M1_SPEED_LOW      200  // Low speed
 #define M1_SPEED_MID      700  // Mid speed
 #define M1_SPEED_HIGH     900  // High speed
 
@@ -51,13 +53,18 @@
 
 // NOTE(rsb): Motor Torque Limits (%)
 
-#define M1_TORQUE_LIMIT   80   // Drum motor
+#define M1_TORQUE_LIMIT   200  // Drum motor
 #define M2_TORQUE_LIMIT   100  // Spooler motor
 
 // NOTE(rsb): Motor Acceleration (RPM/s)
 
-#define M1_ACCELERATION   500  // Drum motor
+#define M1_ACCELERATION   200  // Drum motor
 #define M2_ACCELERATION   500  // Spooler motor
+
+// NOTE(rsb): Motor Acceleration (RPM/s)
+
+#define M1_DECELERATION   200  // Drum motor
+#define M2_DECELERATION   500  // Spooler motor
 
 // NOTE(rsb): Error Codes
 
@@ -67,6 +74,7 @@
 #define MODBUS_ERROR_INVALID  3
 #define MODBUS_ERROR_BUSY     4
 #define MODBUS_ERROR_SEQUENCE 5
+
 
 // NOTE(rsb): Modbus State Structure
 

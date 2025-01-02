@@ -77,6 +77,8 @@ void Modbus_HandleTimeout(void) {
     }
 }
 
+
+
 uint8_t Modbus_RetryLastCommand(void) {
     if (modbusState.lastSlaveID == 0) {
         return MODBUS_ERROR_SEQUENCE;
@@ -133,6 +135,8 @@ uint8_t Modbus_SendCommand(uint8_t slaveID, uint8_t functionCode, uint16_t regAd
     modbusState.retryCount = 0;
     return MODBUS_OK;
 }
+
+
 
 
 
@@ -205,9 +209,7 @@ uint8_t Low_Forward_Synchronize(void) {
     uint8_t result;
     
     // Start drum motor with proper timing
-    result = Motor_Start(DRUM_MOTOR_ID);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
+    
     
     result = Motor_SetDirection(DRUM_MOTOR_ID, FORWARD_DIRECTION);
     if (result != MODBUS_OK) return result;
@@ -217,8 +219,20 @@ uint8_t Low_Forward_Synchronize(void) {
     if (result != MODBUS_OK) return result;
     HAL_Delay(MODBUS_COMMAND_DELAY);
     
+    result = Motor_SetAcceleration(DRUM_MOTOR_ID, M1_ACCELERATION);
+    if (result != MODBUS_OK) return result;
+    HAL_Delay(MODBUS_COMMAND_DELAY);
+    
+    result = Motor_SetTorqueLimit(DRUM_MOTOR_ID, M1_TORQUE_LIMIT);
+    if (result != MODBUS_OK) return result;
+    HAL_Delay(MODBUS_COMMAND_DELAY);
+    
+    //result = Motor_Start(DRUM_MOTOR_ID);
+    //if (result != MODBUS_OK) return result;
+    //HAL_Delay(MODBUS_COMMAND_DELAY);
+    
     // Start spooler motor with proper timing
-    result = Motor_Start(SPOOLER_MOTOR_ID);
+    /*result = Motor_Start(SPOOLER_MOTOR_ID);
     if (result != MODBUS_OK) return result;
     HAL_Delay(MODBUS_COMMAND_DELAY);
     
@@ -226,9 +240,11 @@ uint8_t Low_Forward_Synchronize(void) {
     if (result != MODBUS_OK) return result;
     HAL_Delay(MODBUS_COMMAND_DELAY);
     
-    result = Motor_SetSpeed(SPOOLER_MOTOR_ID, M2_SPEED_LOW);
+    result = Motor_SetSpeed(SPOOLER_MOTOR_ID, M2_SPEED_LOW);*/
     return result;
 }
+
+
 
 
 uint8_t Emergency_Stop(void) {

@@ -110,6 +110,10 @@ int main(void)
         
         /* USER CODE BEGIN 3 */
         //Low_Forward_Synchronize();
+        
+    	Motor_Start(2);
+
+
     }
     /* USER CODE END 3 */
 }
