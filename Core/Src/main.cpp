@@ -100,7 +100,10 @@ int main(void)
     
     /* USER CODE END 2 */
     
-    Low_Forward_Synchronize();
+    
+    Motor_Excitation_ON(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CW_Low_Speed(DRUM_MOTOR_ID); 
     
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
@@ -111,9 +114,28 @@ int main(void)
         /* USER CODE BEGIN 3 */
         //Low_Forward_Synchronize();
         
-    	Motor_Start(2);
-
-
+        //HAL_Delay(3000);
+        
+        
+        //HAL_Delay(3);
+        //Motor_Excitation_ON(SPOOLER_MOTOR_ID);
+        //HAL_Delay(3);
+        
+        //Motor_CW_Low_Speed(DRUM_MOTOR_ID); 
+        //HAL_Delay(3);
+        //Motor_CW_Low_Speed(SPOOLER_MOTOR_ID); 
+        //HAL_Delay(30000);
+        
+        //Motor_CCW_Low_Speed(DRUM_MOTOR_ID);
+        //HAL_Delay(3);
+        //Motor_CCW_Low_Speed(SPOOLER_MOTOR_ID);
+        //HAL_Delay(30000);
+        
+        //Motor_Stop(DRUM_MOTOR_ID);
+        //HAL_Delay(3);
+        //Motor_Stop(SPOOLER_MOTOR_ID);
+        //HAL_Delay(30000);
+        
     }
     /* USER CODE END 3 */
 }

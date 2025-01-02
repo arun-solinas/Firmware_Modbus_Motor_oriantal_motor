@@ -4,9 +4,9 @@
 *                         www.segger.com                             *
 **********************************************************************
 
-File          : D:/code/endobot_firmware/bin/project.jdebug
-Created       : 5 Dec 2024 13:53
-Ozone Version : V3.26b
+File          : D:/code/modbus_motor/bin/project.jdebug
+Created       : 2 Jan 2025 16:57
+Ozone Version : V3.30d
 */
 
 /*********************************************************************
@@ -22,15 +22,17 @@ void OnProjectLoad (void) {
   //
   // Dialog-generated settings
   //
-  Project.SetDevice ("STM32F412RE");
+  Project.AddPathSubstitute ("D:/code/modbus_motor/bin", "$(ProjectDir)");
+  Project.AddPathSubstitute ("d:/code/modbus_motor/bin", "$(ProjectDir)");
+  Project.SetDevice ("STM32F412ZG");
   Project.SetHostIF ("USB", "");
-  Project.SetTargetIF ("JTAG");
+  Project.SetTargetIF ("SWD");
   Project.SetTIFSpeed ("4 MHz");
-  Project.AddSvdFile ("D:/code/endobot_firmware/bin/STM32F412.svd");
+  Project.AddSvdFile ("D:/code/modbus_motor/bin/STM32F412.svd");
   //
   // User settings
   //
-
+  File.Open ("D:/code/modbus_motor/Debug/modbus_motor.elf");
 }
 
 /*********************************************************************

@@ -3,71 +3,51 @@
 
 #include "main.h"
 
-// NOTE(rsb): Modbus Function Codes
-
+// NOTE(rsb): Function Codes
 #define MODBUS_READ_HOLDING_REGS    0x03
 #define MODBUS_WRITE_SINGLE_REG     0x06
 #define MODBUS_WRITE_MULTIPLE_REGS  0x10
 
-
+// NOTE(rsb): Operation Types
+#define CONTINUOUS_OPERATION_SPEED_CONTROL  0x0030
 
 // NOTE(rsb): Register Addresses
-
-#define REG_START_STOP     0x0100
-#define REG_DIRECTION      0x0101
-#define REG_SPEED          0x0102  
-#define REG_TORQUE         0x0103  
-#define REG_ACCELERATION   0x0104  
-#define REG_DECELERATION   0x0105 
-#define REG_STATUS         0x0106  
+#define REG_OPERATION_START    0x005A
+#define REG_EXCITATION        0x007C
 
 // NOTE(rsb): Timing Parameters (milliseconds)
-
-#define MODBUS_RESPONSE_TIMEOUT     1000    // Maximum wait for response
-#define MODBUS_INTER_FRAME_DELAY    100     // Time between frames
-#define MODBUS_RETRY_COUNT          3       // Number of retries
-#define MODBUS_COMMAND_DELAY        50      // Delay between commands
-#define MODBUS_ERROR_RECOVERY_TIME  200     // Wait after error
+#define MODBUS_RESPONSE_TIMEOUT     1000
+#define MODBUS_INTER_FRAME_DELAY    100
+#define MODBUS_RETRY_COUNT          3
+#define MODBUS_COMMAND_DELAY        50
+#define MODBUS_ERROR_RECOVERY_TIME  200
 
 // NOTE(rsb): Motor IDs
-
-#define DRUM_MOTOR_ID      1  // Drum Motor ID
-#define SPOOLER_MOTOR_ID   2  // Spooler Motor ID
+#define DRUM_MOTOR_ID      1
+#define SPOOLER_MOTOR_ID   2
 
 // NOTE(rsb): Motor Directions
-
-#define FORWARD_DIRECTION  0  // CW
-#define REVERSE_DIRECTION  1  // CCW
+#define FORWARD_DIRECTION  1  // CW
+#define REVERSE_DIRECTION  2  // CCW
 
 // NOTE(rsb): Drum Motor Speed Levels (RPM)
-
-#define M1_SPEED_LOW      200  // Low speed
-#define M1_SPEED_MID      700  // Mid speed
-#define M1_SPEED_HIGH     900  // High speed
+#define M1_SPEED_LOW      200
+#define M1_SPEED_MID      700
+#define M1_SPEED_HIGH     900
 
 // NOTE(rsb): Spooler Motor Speed Levels (RPM)
+#define M2_SPEED_LOW      (M1_SPEED_LOW/4)
+#define M2_SPEED_MID      (M1_SPEED_MID/4)
+#define M2_SPEED_HIGH     (M1_SPEED_HIGH/4)
 
-#define M2_SPEED_LOW      (M1_SPEED_LOW/4)   // Low speed
-#define M2_SPEED_MID      (M1_SPEED_MID/4)   // Mid speed
-#define M2_SPEED_HIGH     (M1_SPEED_HIGH/4)  // High speed
+// NOTE(rsb): Motor Parameters
+#define DEFAULT_ACCELERATION    1000    // 1000ms
+#define DEFAULT_DECELERATION    1000    // 1000ms
+#define DEFAULT_TORQUE_LIMIT    2500    // 25.00%
 
-// NOTE(rsb): Motor Torque Limits (%)
 
-#define M1_TORQUE_LIMIT   200  // Drum motor
-#define M2_TORQUE_LIMIT   100  // Spooler motor
-
-// NOTE(rsb): Motor Acceleration (RPM/s)
-
-#define M1_ACCELERATION   200  // Drum motor
-#define M2_ACCELERATION   500  // Spooler motor
-
-// NOTE(rsb): Motor Acceleration (RPM/s)
-
-#define M1_DECELERATION   200  // Drum motor
-#define M2_DECELERATION   500  // Spooler motor
 
 // NOTE(rsb): Error Codes
-
 #define MODBUS_OK             0
 #define MODBUS_ERROR_CRC      1
 #define MODBUS_ERROR_TIMEOUT  2
@@ -75,51 +55,38 @@
 #define MODBUS_ERROR_BUSY     4
 #define MODBUS_ERROR_SEQUENCE 5
 
-
 // NOTE(rsb): Modbus State Structure
-
 typedef struct {
-    uint32_t lastCommandTime;    // Timestamp of last command
-    uint8_t busyFlag;           // Communication in progress flag
-    uint8_t retryCount;         // Current retry count
-    uint8_t lastSlaveID;        // Last addressed slave
-    uint8_t lastFunction;       // Last function code
-    uint16_t lastRegister;      // Last accessed register
-    uint16_t lastValue;         // Last value sent
+    uint32_t lastCommandTime;
+    uint8_t busyFlag;
+    uint8_t retryCount;
+    uint8_t lastSlaveID;
+    uint8_t lastFunction;
+    uint16_t lastRegister;
+    uint16_t lastValue;
 } ModbusState_t;
 
-
 // NOTE(rsb): Core Modbus Functions
-
 uint8_t Modbus_Init(void);
 uint16_t Modbus_CalculateCRC(uint8_t *buffer, uint16_t length);
-uint8_t Modbus_SendCommand(uint8_t slaveID, uint8_t functionCode, uint16_t regAddress, uint16_t value);
-uint16_t Modbus_ReadResponse(uint8_t slaveID, uint8_t functionCode, uint16_t *value);
-uint8_t Modbus_IsReadyToSend(void);
+uint8_t Modbus_SendCommand(uint8_t *request, uint16_t length);
 uint8_t Modbus_WaitResponse(uint32_t timeout);
-void Modbus_HandleTimeout(void);
-uint8_t Modbus_RetryLastCommand(void);
-uint8_t Modbus_ValidateResponse(uint8_t *response, uint8_t length, uint8_t expectedSlaveId, uint8_t expectedFunction);
 
 // NOTE(rsb): Motor Control Functions
+uint8_t Motor_Excitation_ON(uint8_t motorID);
+uint8_t Motor_Excitation_OFF(uint8_t motorID);
 
-uint8_t Motor_Start(uint8_t slaveID);
-uint8_t Motor_Stop(uint8_t slaveID);
-uint8_t Motor_SetDirection(uint8_t slaveID, uint8_t direction);
-uint8_t Motor_SetSpeed(uint8_t slaveID, uint16_t speed);
-uint8_t Motor_SetTorqueLimit(uint8_t slaveID, uint16_t torqueLimit);
-uint8_t Motor_SetAcceleration(uint8_t slaveID, uint16_t acceleration);
-uint8_t Motor_SetDeceleration(uint8_t slaveID, uint16_t deceleration);
-uint8_t Motor_GetStatus(uint8_t slaveID, uint16_t *status);
+// NOTE(rsb): Clockwise (Forward) Speed Control Functions
+uint8_t Motor_CW_Low_Speed(uint8_t motorID);
+uint8_t Motor_CW_Mid_Speed(uint8_t motorID);
+uint8_t Motor_CW_High_Speed(uint8_t motorID);
 
-// NOTE(rsb): Synchronized Control Functions
+// NOTE(rsb): Counter-Clockwise (Reverse) Speed Control Functions
+uint8_t Motor_CCW_Low_Speed(uint8_t motorID);
+uint8_t Motor_CCW_Mid_Speed(uint8_t motorID);
+uint8_t Motor_CCW_High_Speed(uint8_t motorID);
 
-uint8_t Low_Forward_Synchronize(void);
-uint8_t Low_Reverse_Synchronize(void);
-uint8_t Mid_Forward_Synchronize(void);
-uint8_t Mid_Reverse_Synchronize(void);
-uint8_t High_Forward_Synchronize(void);
-uint8_t High_Reverse_Synchronize(void);
-uint8_t Emergency_Stop(void);
+// NOTE(rsb): Stop Function
+uint8_t Motor_Stop(uint8_t motorID);
 
 #endif // MODBUS_MOTOR_H

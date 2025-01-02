@@ -3,8 +3,7 @@
 extern UART_HandleTypeDef huart6;
 static ModbusState_t modbusState = {0};
 
-// NOTE(rsb):Initialization Functions
-
+// NOTE(rsb): Core Functions Implementation
 uint8_t Modbus_Init(void) {
     modbusState.lastCommandTime = 0;
     modbusState.busyFlag = 0;
@@ -15,8 +14,6 @@ uint8_t Modbus_Init(void) {
     modbusState.lastValue = 0;
     return MODBUS_OK;
 }
-
-// NOTE(rsb):Core Modbus Functions
 
 uint16_t Modbus_CalculateCRC(uint8_t *buffer, uint16_t length) {
     uint16_t crc = 0xFFFF;
@@ -33,18 +30,13 @@ uint16_t Modbus_CalculateCRC(uint8_t *buffer, uint16_t length) {
     return crc;
 }
 
-uint8_t Modbus_IsReadyToSend(void) {
-    uint32_t currentTime = HAL_GetTick();
-    if ((currentTime - modbusState.lastCommandTime) < MODBUS_INTER_FRAME_DELAY) {
-        return 0;
-    }
-    return !modbusState.busyFlag;
+uint8_t Modbus_SendCommand(uint8_t *request, uint16_t length) {
+    HAL_StatusTypeDef status = HAL_UART_Transmit(&huart6, request, length, MODBUS_RESPONSE_TIMEOUT);
+    return (status == HAL_OK) ? MODBUS_OK : MODBUS_ERROR_TIMEOUT;
 }
 
 uint8_t Modbus_WaitResponse(uint32_t timeout) {
-    
     uint32_t startTime = HAL_GetTick();
-    
     while ((HAL_GetTick() - startTime) < timeout) {
         if (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_RXNE)) {
             return MODBUS_OK;
@@ -54,205 +46,151 @@ uint8_t Modbus_WaitResponse(uint32_t timeout) {
     return MODBUS_ERROR_TIMEOUT;
 }
 
-uint8_t Modbus_ValidateResponse(uint8_t *response, uint8_t length, uint8_t expectedSlaveId, uint8_t expectedFunction) {
+// NOTE(rsb): Motor Control Functions Implementation
+uint8_t Motor_Excitation_ON(uint8_t motorID) {
+    uint8_t request[16] = {0};
     
-    if (response[0] != expectedSlaveId || response[1] != expectedFunction) {
-        return 0;
+    request[0] = motorID;           // Address
+    request[1] = 0x10;             // Function code
+    request[2] = 0x00;             // Register address high
+    request[3] = 0x7C;             // Register address low
+    request[4] = 0x00;             // Number of registers high
+    request[5] = 0x02;             // Number of registers low
+    request[6] = 0x04;             // Byte count
+    request[7] = 0x00;             // Data high
+    request[8] = 0x00;             // Data
+    request[9] = 0x00;             // Data
+    request[10] = 0x01;            // Data low (ON)
+    
+    uint16_t crc = Modbus_CalculateCRC(request, 11);
+    request[11] = crc & 0xFF;
+    request[12] = (crc >> 8) & 0xFF;
+    
+    return Modbus_SendCommand(request, 13);
+}
+
+uint8_t Motor_Excitation_OFF(uint8_t motorID) {
+    uint8_t request[16] = {0};
+    
+    request[0] = motorID;
+    request[1] = 0x10;
+    request[2] = 0x00;
+    request[3] = 0x7C;
+    request[4] = 0x00;
+    request[5] = 0x02;
+    request[6] = 0x04;
+    request[7] = 0x00;
+    request[8] = 0x00;
+    request[9] = 0x00;
+    request[10] = 0x00;            // OFF
+    
+    uint16_t crc = Modbus_CalculateCRC(request, 11);
+    request[11] = crc & 0xFF;
+    request[12] = (crc >> 8) & 0xFF;
+    
+    return Modbus_SendCommand(request, 13);
+}
+
+uint8_t Motor_Speed_Control(uint8_t motorID, int16_t speed) {
+    uint8_t request[40] = {0};
+    
+    request[0] = motorID;                // Address
+    request[1] = 0x10;                   // Function code
+    request[2] = 0x00;                   // Register address high
+    request[3] = 0x5A;                   // Register address low
+    request[4] = 0x00;                   // Number of registers high
+    request[5] = 0x0E;                   // Number of registers low
+    request[6] = 0x1C;                   // Byte count
+    
+    // Operation type (Continuous operation speed control)
+    request[7] = 0x00;
+    request[8] = 0x00;
+    request[9] = 0x00;
+    request[10] = 0x30;
+    
+    // Position (unused)
+    request[11] = 0x00;
+    request[12] = 0x00;
+    request[13] = 0x00;
+    request[14] = 0x00;
+    
+    // Speed
+    if (speed >= 0) {
+        request[15] = 0x00;
+        request[16] = 0x00;
+        request[17] = (speed >> 8) & 0xFF;
+        request[18] = speed & 0xFF;
+    } else {
+        request[15] = 0xFF;
+        request[16] = 0xFF;
+        speed = -speed;
+        request[17] = (speed >> 8) & 0xFF;
+        request[18] = speed & 0xFF;
     }
     
-    uint16_t received_crc = (response[length-1] << 8) | response[length-2];
-    uint16_t calculated_crc = Modbus_CalculateCRC(response, length-2);
-    return (received_crc == calculated_crc);
+    // Acceleration
+    request[19] = 0x00;
+    request[20] = 0x00;
+    request[21] = (DEFAULT_ACCELERATION >> 8) & 0xFF;
+    request[22] = DEFAULT_ACCELERATION & 0xFF;
     
+    // Deceleration
+    request[23] = 0x00;
+    request[24] = 0x00;
+    request[25] = (DEFAULT_DECELERATION >> 8) & 0xFF;
+    request[26] = DEFAULT_DECELERATION & 0xFF;
+    
+    // Torque limit
+    request[27] = 0x00;
+    request[28] = 0x00;
+    request[29] = (DEFAULT_TORQUE_LIMIT >> 8) & 0xFF;
+    request[30] = DEFAULT_TORQUE_LIMIT & 0xFF;
+    
+    // Trigger
+    request[31] = 0x00;
+    request[32] = 0x00;
+    request[33] = 0x00;
+    request[34] = 0x01;
+    
+    uint16_t crc = Modbus_CalculateCRC(request, 35);
+    request[35] = crc & 0xFF;
+    request[36] = (crc >> 8) & 0xFF;
+    
+    return Modbus_SendCommand(request, 37);
 }
 
-void Modbus_HandleTimeout(void) {
-    
-    modbusState.busyFlag = 0;
-    if (modbusState.retryCount < MODBUS_RETRY_COUNT) {
-        modbusState.retryCount++;
-        HAL_Delay(MODBUS_ERROR_RECOVERY_TIME);
-        Modbus_RetryLastCommand();
-        
-    }
+// CW Speed Control Functions
+uint8_t Motor_CW_Low_Speed(uint8_t motorID) {
+    uint16_t speed = (motorID == DRUM_MOTOR_ID) ? M1_SPEED_LOW : M2_SPEED_LOW;
+    return Motor_Speed_Control(motorID, speed);
 }
 
-
-
-uint8_t Modbus_RetryLastCommand(void) {
-    if (modbusState.lastSlaveID == 0) {
-        return MODBUS_ERROR_SEQUENCE;
-    }
-    return Modbus_SendCommand(modbusState.lastSlaveID, 
-                              modbusState.lastFunction,
-                              modbusState.lastRegister, 
-                              modbusState.lastValue);
+uint8_t Motor_CW_Mid_Speed(uint8_t motorID) {
+    uint16_t speed = (motorID == DRUM_MOTOR_ID) ? M1_SPEED_MID : M2_SPEED_MID;
+    return Motor_Speed_Control(motorID, speed);
 }
 
-uint8_t Modbus_SendCommand(uint8_t slaveID, uint8_t functionCode, uint16_t regAddress, uint16_t value) {
-    
-    
-    while (!Modbus_IsReadyToSend()) {
-        HAL_Delay(1);
-    }
-    
-    
-    uint8_t request[8];
-    request[0] = slaveID;
-    request[1] = functionCode;
-    request[2] = (regAddress >> 8) & 0xFF;
-    request[3] = regAddress & 0xFF;
-    request[4] = (value >> 8) & 0xFF;
-    request[5] = value & 0xFF;
-    
-    uint16_t crc = Modbus_CalculateCRC(request, 6);
-    request[6] = crc & 0xFF;
-    request[7] = (crc >> 8) & 0xFF;
-    
-    // Store command details for potential retry
-    modbusState.lastSlaveID = slaveID;
-    modbusState.lastFunction = functionCode;
-    modbusState.lastRegister = regAddress;
-    modbusState.lastValue = value;
-    modbusState.busyFlag = 1;
-    
-    HAL_StatusTypeDef status = HAL_UART_Transmit(&huart6, request, 8, MODBUS_RESPONSE_TIMEOUT);
-    
-    if (status != HAL_OK) {
-        Modbus_HandleTimeout();
-        return MODBUS_ERROR_TIMEOUT;
-    }
-    
-    modbusState.lastCommandTime = HAL_GetTick();
-    
-    uint8_t responseStatus = Modbus_WaitResponse(MODBUS_RESPONSE_TIMEOUT);
-    if (responseStatus != MODBUS_OK) {
-        Modbus_HandleTimeout();
-        return responseStatus;
-    }
-    
-    modbusState.busyFlag = 0;
-    modbusState.retryCount = 0;
-    return MODBUS_OK;
+uint8_t Motor_CW_High_Speed(uint8_t motorID) {
+    uint16_t speed = (motorID == DRUM_MOTOR_ID) ? M1_SPEED_HIGH : M2_SPEED_HIGH;
+    return Motor_Speed_Control(motorID, speed);
 }
 
-
-
-
-
-
-uint16_t Modbus_ReadResponse(uint8_t slaveID, uint8_t functionCode, uint16_t *value) {
-    
-    uint8_t response[8];
-    
-    HAL_StatusTypeDef status = HAL_UART_Receive(&huart6, response, 8, MODBUS_RESPONSE_TIMEOUT);
-    
-    if (status != HAL_OK) {
-        Modbus_HandleTimeout();
-        return MODBUS_ERROR_TIMEOUT;
-    }
-    
-    if (!Modbus_ValidateResponse(response, 8, slaveID, functionCode)) {
-        return MODBUS_ERROR_INVALID;
-    }
-    
-    *value = (response[4] << 8) | response[5];
-    modbusState.busyFlag = 0;
-    return MODBUS_OK;
+// CCW Speed Control Functions
+uint8_t Motor_CCW_Low_Speed(uint8_t motorID) {
+    uint16_t speed = (motorID == DRUM_MOTOR_ID) ? M1_SPEED_LOW : M2_SPEED_LOW;
+    return Motor_Speed_Control(motorID, -speed);
 }
 
-
-// NOTE(rsb):Motor Control Functions
-
-
-uint8_t Motor_Start(uint8_t slaveID) {
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_START_STOP, 1);
+uint8_t Motor_CCW_Mid_Speed(uint8_t motorID) {
+    uint16_t speed = (motorID == DRUM_MOTOR_ID) ? M1_SPEED_MID : M2_SPEED_MID;
+    return Motor_Speed_Control(motorID, -speed);
 }
 
-uint8_t Motor_Stop(uint8_t slaveID) {
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_START_STOP, 0);
+uint8_t Motor_CCW_High_Speed(uint8_t motorID) {
+    uint16_t speed = (motorID == DRUM_MOTOR_ID) ? M1_SPEED_HIGH : M2_SPEED_HIGH;
+    return Motor_Speed_Control(motorID, -speed);
 }
 
-uint8_t Motor_SetDirection(uint8_t slaveID, uint8_t direction) {
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_DIRECTION, direction);
-}
-
-uint8_t Motor_SetSpeed(uint8_t slaveID, uint16_t speed) {
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_SPEED, speed);
-}
-
-uint8_t Motor_SetTorqueLimit(uint8_t slaveID, uint16_t torqueLimit) {
-    if (torqueLimit > 100) torqueLimit = 100;
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_TORQUE, torqueLimit);
-}
-
-uint8_t Motor_SetAcceleration(uint8_t slaveID, uint16_t acceleration) {
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_ACCELERATION, acceleration);
-}
-
-uint8_t Motor_SetDeceleration(uint8_t slaveID, uint16_t deceleration) {
-    return Modbus_SendCommand(slaveID, MODBUS_WRITE_SINGLE_REG, REG_DECELERATION, deceleration);
-}
-
-uint8_t Motor_GetStatus(uint8_t slaveID, uint16_t *status) {
-    uint8_t result = Modbus_SendCommand(slaveID, MODBUS_READ_HOLDING_REGS, REG_STATUS, 1);
-    if (result != MODBUS_OK) return result;
-    return Modbus_ReadResponse(slaveID, MODBUS_READ_HOLDING_REGS, status);
-}
-
-
-
-// NOTE(rsb): Synchronized Control Functions
-
-
-uint8_t Low_Forward_Synchronize(void) {
-    uint8_t result;
-    
-    // Start drum motor with proper timing
-    
-    
-    result = Motor_SetDirection(DRUM_MOTOR_ID, FORWARD_DIRECTION);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    result = Motor_SetSpeed(DRUM_MOTOR_ID, M1_SPEED_LOW);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    result = Motor_SetAcceleration(DRUM_MOTOR_ID, M1_ACCELERATION);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    result = Motor_SetTorqueLimit(DRUM_MOTOR_ID, M1_TORQUE_LIMIT);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    //result = Motor_Start(DRUM_MOTOR_ID);
-    //if (result != MODBUS_OK) return result;
-    //HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    // Start spooler motor with proper timing
-    /*result = Motor_Start(SPOOLER_MOTOR_ID);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    result = Motor_SetDirection(SPOOLER_MOTOR_ID, FORWARD_DIRECTION);
-    if (result != MODBUS_OK) return result;
-    HAL_Delay(MODBUS_COMMAND_DELAY);
-    
-    result = Motor_SetSpeed(SPOOLER_MOTOR_ID, M2_SPEED_LOW);*/
-    return result;
-}
-
-
-
-
-uint8_t Emergency_Stop(void) {
-    uint8_t result;
-    
-    result = Motor_Stop(DRUM_MOTOR_ID);
-    if (result != MODBUS_OK) return result;
-    
-    result = Motor_Stop(SPOOLER_MOTOR_ID);
-    return result;
+uint8_t Motor_Stop(uint8_t motorID) {
+    return Motor_Speed_Control(motorID, 0);
 }

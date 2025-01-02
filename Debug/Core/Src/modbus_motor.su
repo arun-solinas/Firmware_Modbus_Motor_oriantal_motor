@@ -1,19 +1,14 @@
-../Core/Src/modbus_motor.cpp:8:9:uint8_t Modbus_Init()	4	static
-../Core/Src/modbus_motor.cpp:21:10:uint16_t Modbus_CalculateCRC(uint8_t*, uint16_t)	24	static
-../Core/Src/modbus_motor.cpp:36:9:uint8_t Modbus_IsReadyToSend()	16	static
-../Core/Src/modbus_motor.cpp:44:9:uint8_t Modbus_WaitResponse(uint32_t)	24	static
-../Core/Src/modbus_motor.cpp:57:9:uint8_t Modbus_ValidateResponse(uint8_t*, uint8_t, uint8_t, uint8_t)	24	static
-../Core/Src/modbus_motor.cpp:69:6:void Modbus_HandleTimeout()	8	static
-../Core/Src/modbus_motor.cpp:82:9:uint8_t Modbus_RetryLastCommand()	8	static
-../Core/Src/modbus_motor.cpp:92:9:uint8_t Modbus_SendCommand(uint8_t, uint8_t, uint16_t, uint16_t)	40	static
-../Core/Src/modbus_motor.cpp:144:10:uint16_t Modbus_ReadResponse(uint8_t, uint8_t, uint16_t*)	32	static
-../Core/Src/modbus_motor.cpp:168:9:uint8_t Motor_Start(uint8_t)	16	static
-../Core/Src/modbus_motor.cpp:172:9:uint8_t Motor_Stop(uint8_t)	16	static
-../Core/Src/modbus_motor.cpp:176:9:uint8_t Motor_SetDirection(uint8_t, uint8_t)	16	static
-../Core/Src/modbus_motor.cpp:180:9:uint8_t Motor_SetSpeed(uint8_t, uint16_t)	16	static
-../Core/Src/modbus_motor.cpp:184:9:uint8_t Motor_SetTorqueLimit(uint8_t, uint16_t)	16	static
-../Core/Src/modbus_motor.cpp:189:9:uint8_t Motor_SetAcceleration(uint8_t, uint16_t)	16	static
-../Core/Src/modbus_motor.cpp:193:9:uint8_t Motor_SetDeceleration(uint8_t, uint16_t)	16	static
-../Core/Src/modbus_motor.cpp:197:9:uint8_t Motor_GetStatus(uint8_t, uint16_t*)	24	static
-../Core/Src/modbus_motor.cpp:208:9:uint8_t Low_Forward_Synchronize()	16	static
-../Core/Src/modbus_motor.cpp:250:9:uint8_t Emergency_Stop()	16	static
+../Core/Src/modbus_motor.cpp:7:9:uint8_t Modbus_Init()	4	static
+../Core/Src/modbus_motor.cpp:18:10:uint16_t Modbus_CalculateCRC(uint8_t*, uint16_t)	24	static
+../Core/Src/modbus_motor.cpp:33:9:uint8_t Modbus_SendCommand(uint8_t*, uint16_t)	24	static
+../Core/Src/modbus_motor.cpp:38:9:uint8_t Modbus_WaitResponse(uint32_t)	24	static
+../Core/Src/modbus_motor.cpp:50:9:uint8_t Motor_Excitation_ON(uint8_t)	40	static
+../Core/Src/modbus_motor.cpp:72:9:uint8_t Motor_Excitation_OFF(uint8_t)	40	static
+../Core/Src/modbus_motor.cpp:94:9:uint8_t Motor_Speed_Control(uint8_t, int16_t)	64	static
+../Core/Src/modbus_motor.cpp:163:9:uint8_t Motor_CW_Low_Speed(uint8_t)	24	static
+../Core/Src/modbus_motor.cpp:168:9:uint8_t Motor_CW_Mid_Speed(uint8_t)	24	static
+../Core/Src/modbus_motor.cpp:173:9:uint8_t Motor_CW_High_Speed(uint8_t)	24	static
+../Core/Src/modbus_motor.cpp:179:9:uint8_t Motor_CCW_Low_Speed(uint8_t)	24	static
+../Core/Src/modbus_motor.cpp:184:9:uint8_t Motor_CCW_Mid_Speed(uint8_t)	24	static
+../Core/Src/modbus_motor.cpp:189:9:uint8_t Motor_CCW_High_Speed(uint8_t)	24	static
+../Core/Src/modbus_motor.cpp:194:9:uint8_t Motor_Stop(uint8_t)	16	static
