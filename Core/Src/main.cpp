@@ -103,8 +103,41 @@ int main(void)
     
     Motor_Excitation_ON(DRUM_MOTOR_ID);
     HAL_Delay(30);
-    Motor_CW_Low_Speed(DRUM_MOTOR_ID); 
+    Motor_Excitation_ON(SPOOLER_MOTOR_ID);
+    HAL_Delay(30);
     
+    
+    Motor_CW_Low_Speed(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CW_Low_Speed(SPOOLER_MOTOR_ID);
+    HAL_Delay(10000);
+    Motor_CCW_Low_Speed(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CCW_Low_Speed(SPOOLER_MOTOR_ID);
+    HAL_Delay(9000);
+    
+    
+    Motor_CW_Mid_Speed(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CW_Mid_Speed(SPOOLER_MOTOR_ID);
+    HAL_Delay(10000);
+    Motor_CCW_Mid_Speed(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CCW_Mid_Speed(SPOOLER_MOTOR_ID);
+    HAL_Delay(10000);
+    
+    Motor_CW_High_Speed(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CW_High_Speed(SPOOLER_MOTOR_ID);
+    HAL_Delay(10000);
+    Motor_CCW_High_Speed(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_CCW_High_Speed(SPOOLER_MOTOR_ID);
+    HAL_Delay(10000);
+    
+    Motor_Stop(DRUM_MOTOR_ID);
+    HAL_Delay(30);
+    Motor_Stop(SPOOLER_MOTOR_ID);
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     while (1)

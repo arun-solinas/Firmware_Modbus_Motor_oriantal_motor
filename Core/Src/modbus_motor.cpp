@@ -116,16 +116,18 @@ uint8_t Motor_Speed_Control(uint8_t motorID, int16_t speed) {
     
     // Speed
     if (speed >= 0) {
+        // Positive values: 00 00 followed by value
         request[15] = 0x00;
         request[16] = 0x00;
         request[17] = (speed >> 8) & 0xFF;
         request[18] = speed & 0xFF;
     } else {
-        request[15] = 0xFF;
-        request[16] = 0xFF;
-        speed = -speed;
-        request[17] = (speed >> 8) & 0xFF;
-        request[18] = speed & 0xFF;
+        
+        int32_t fullValue = speed;  
+        request[15] = (fullValue >> 24) & 0xFF; 
+        request[16] = (fullValue >> 16) & 0xFF; 
+        request[17] = (fullValue >> 8) & 0xFF;   
+        request[18] = fullValue & 0xFF;      
     }
     
     // Acceleration

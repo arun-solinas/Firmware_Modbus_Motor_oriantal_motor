@@ -3,7 +3,7 @@
 [GENERAL]
   aATEModuleSel[24] = 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
   ConnectMode = 0
-  CurrentFile = "D:\code\endobot_firmware\Debug\endobot_firmware.elf"
+  CurrentFile = "D:\code\modbus_motor\Debug\modbus_motor.elf"
   DataFileSAddr = 0x00000000
   GUIMode = 0
   HostName = ""
@@ -33,20 +33,26 @@
   ScriptFile = ""
   UseRAM = 1
   RAMAddr = 0x20000000
-  RAMSize = 0x00020000
+  RAMSize = 0x00040000
   CheckCoreID = 1
   CoreID = 0x4BA00477
   CoreIDMask = 0x0F000FFF
   UseAutoSpeed = 0x00000001
   ClockSpeed = 0x00000000
   EndianMode = 0
-  ChipName = "ST STM32F446VE"
+  ChipName = "ST STM32F412ZG"
 [FLASH]
-  aRangeSel[1] = 0-7
+  NumBanks = 2
+[FLASH0]
+  aRangeSel[1] = 0-11
   BankName = "Internal flash"
   BankSelMode = 1
   BaseAddr = 0x08000000
-  NumBanks = 1
+[FLASH1]
+  aRangeSel[1] = 0-255
+  BankName = "QSPI Flash"
+  BankSelMode = 1
+  BaseAddr = 0x90000000
 [PRODUCTION]
   AutoPerformsDisconnect = 0
   AutoPerformsErase = 1

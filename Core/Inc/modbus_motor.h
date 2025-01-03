@@ -31,9 +31,9 @@
 #define REVERSE_DIRECTION  2  // CCW
 
 // NOTE(rsb): Drum Motor Speed Levels (RPM)
-#define M1_SPEED_LOW      200
-#define M1_SPEED_MID      700
-#define M1_SPEED_HIGH     900
+#define M1_SPEED_LOW      1500
+#define M1_SPEED_MID      2500
+#define M1_SPEED_HIGH     3000
 
 // NOTE(rsb): Spooler Motor Speed Levels (RPM)
 #define M2_SPEED_LOW      (M1_SPEED_LOW/4)
@@ -43,7 +43,7 @@
 // NOTE(rsb): Motor Parameters
 #define DEFAULT_ACCELERATION    1000    // 1000ms
 #define DEFAULT_DECELERATION    1000    // 1000ms
-#define DEFAULT_TORQUE_LIMIT    2500    // 25.00%
+#define DEFAULT_TORQUE_LIMIT    2500   // 25.00%
 
 
 

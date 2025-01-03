@@ -5,10 +5,10 @@
 ../Core/Src/modbus_motor.cpp:50:9:uint8_t Motor_Excitation_ON(uint8_t)	1
 ../Core/Src/modbus_motor.cpp:72:9:uint8_t Motor_Excitation_OFF(uint8_t)	1
 ../Core/Src/modbus_motor.cpp:94:9:uint8_t Motor_Speed_Control(uint8_t, int16_t)	2
-../Core/Src/modbus_motor.cpp:163:9:uint8_t Motor_CW_Low_Speed(uint8_t)	2
-../Core/Src/modbus_motor.cpp:168:9:uint8_t Motor_CW_Mid_Speed(uint8_t)	2
-../Core/Src/modbus_motor.cpp:173:9:uint8_t Motor_CW_High_Speed(uint8_t)	2
-../Core/Src/modbus_motor.cpp:179:9:uint8_t Motor_CCW_Low_Speed(uint8_t)	2
-../Core/Src/modbus_motor.cpp:184:9:uint8_t Motor_CCW_Mid_Speed(uint8_t)	2
-../Core/Src/modbus_motor.cpp:189:9:uint8_t Motor_CCW_High_Speed(uint8_t)	2
-../Core/Src/modbus_motor.cpp:194:9:uint8_t Motor_Stop(uint8_t)	1
+../Core/Src/modbus_motor.cpp:165:9:uint8_t Motor_CW_Low_Speed(uint8_t)	2
+../Core/Src/modbus_motor.cpp:170:9:uint8_t Motor_CW_Mid_Speed(uint8_t)	2
+../Core/Src/modbus_motor.cpp:175:9:uint8_t Motor_CW_High_Speed(uint8_t)	2
+../Core/Src/modbus_motor.cpp:181:9:uint8_t Motor_CCW_Low_Speed(uint8_t)	2
+../Core/Src/modbus_motor.cpp:186:9:uint8_t Motor_CCW_Mid_Speed(uint8_t)	2
+../Core/Src/modbus_motor.cpp:191:9:uint8_t Motor_CCW_High_Speed(uint8_t)	2
+../Core/Src/modbus_motor.cpp:196:9:uint8_t Motor_Stop(uint8_t)	1

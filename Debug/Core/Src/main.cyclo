@@ -1,7 +1,7 @@
 ../Core/Src/main.cpp:71:5:int main()	1
-../Core/Src/main.cpp:147:6:void SystemClock_Config()	3
-../Core/Src/main.cpp:194:13:void MX_USART3_UART_Init()	2
-../Core/Src/main.cpp:227:13:void MX_USART6_UART_Init()	2
-../Core/Src/main.cpp:260:13:void MX_USB_OTG_FS_PCD_Init()	2
-../Core/Src/main.cpp:296:13:void MX_GPIO_Init()	1
-../Core/Src/main.cpp:354:6:void Error_Handler()	1
+../Core/Src/main.cpp:180:6:void SystemClock_Config()	3
+../Core/Src/main.cpp:227:13:void MX_USART3_UART_Init()	2
+../Core/Src/main.cpp:260:13:void MX_USART6_UART_Init()	2
+../Core/Src/main.cpp:293:13:void MX_USB_OTG_FS_PCD_Init()	2
+../Core/Src/main.cpp:329:13:void MX_GPIO_Init()	1
+../Core/Src/main.cpp:387:6:void Error_Handler()	1
